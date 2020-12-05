@@ -6,7 +6,7 @@ The simplest way is to execute **'ForTA.py'**. It loads the weights what I train
 
 ## How to use
 ### For scoring
-Excecute **ForTA.py**. There is no need to use any arguments. It reads "FtanukiCharNet.pth" weight file on the same folder.
+Excecute **ForTA.py**. There is no need to use any arguments. It reads **"FtanukiCharNet.pth"** weight file on the same folder.
 #### Requisites
 * Pytorch
 * torchvision
@@ -20,8 +20,8 @@ My codes generates randomly rotated, shifted, and resized figures without loss. 
 My code extracts the ROI(Region of Interest) using bounding box function. To make the function well-operated, I applied bilateralFilter and adaptive thresholding in prior. And then for denosing, I applied randomly constrast increasing.
 From ROI, I resized ROI randomly, but using LANCZOS for lower reszing noise. And then translate it in only 350*350 array.
 
-Because of the speed problem, I implemented this by two methods. First one is simple, I made custom transform function for Pytorch. It looks nice and easy to use. But data loading is too slow because numpy cannot support multiprocessing.
-For solving it, I just implemented the program to save augumented image in HDD first,"gen_aug.py". And then train it with "tanukiChar_trainer_with_gen_aug.py". It is more faster.
+Because of the speed problem, I implemented this by two methods. First one is simple, I made custom transform function for Pytorch. It looks nice and easy to use.(It is implemented in *tanukiChar_trainer.py*) But data loading is too slow because numpy cannot support multiprocessing.
+For solving it, I just implemented the program to save augumented image in HDD first,*"gen_aug.py"*. And then train it with *"tanukiChar_trainer_with_gen_aug.py"*. It is more faster.
 ### 2. Small batch size
 By some papers, they argued that generalization performance increase in more various learning rate under small batch size. It recommends batch size as 8.
 ### 3. Adaptive learning rate
