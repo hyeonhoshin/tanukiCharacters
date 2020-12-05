@@ -15,15 +15,15 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # create lists to save the labels (the name of the shape)
 train_labels, train_images = [],[]
-train_dir = "./abcde" #'./aug_abcde' when using dset from gen_aug.py
+train_dir = './aug_abcde'
 shape_list = ['a', 'b', 'c', 'd', 'e']
 
 batch_size = 16
-epochs = 25*100 #Augument rate
+epochs = 25
 
 # Data augumentation
 train_transform = transforms.Compose([
-    Augument(pad=1),
+
     transforms.GaussianBlur((5,5), sigma=(0.1, 2.0)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5,0.5,0.5],
@@ -33,7 +33,7 @@ train_transform = transforms.Compose([
 trainset = dset.ImageFolder(root=train_dir,
                            transform=train_transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True, num_workers=0)
+                                          shuffle=True, num_workers=8)
 
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
@@ -99,7 +99,6 @@ for epoch in range(epochs):  # loop over the dataset multiple times
     # Learning rate changes
     sch.step()
     
-    if epoch%100 == 100-1:
-        torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
+    torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
 
 print('Finished Training')

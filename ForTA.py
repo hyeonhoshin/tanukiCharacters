@@ -1,13 +1,11 @@
-import cv2
-import numpy as np
-import os
 import torch
-import matplotlib.pyplot as plt
 import torchvision
 from tanukiCharNet import Resnet, BasicBlock
+import torchvision.datasets as dset
+import torchvision.transforms as transforms
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
-
+cpu = torch.device('cpu')
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
 
@@ -15,18 +13,17 @@ model.load_state_dict(torch.load("FtanukiCharNet.pth"))
 model.eval()
 batch_size = 16
 
-#test_dir = '../ForTA/abcde'
-test_dir = '../ForTA'
+test_dir = '../ForTA/abcde'
+#test_dir = '../ForTA'
 
 test_images = dset.ImageFolder(root=test_dir,
                            transform=transforms.Compose([
-                               Clearify(pad=2),
                                transforms.ToTensor(),
                                transforms.Normalize((0.5,0.5,0.5),  
                                                     (0.5,0.5,0.5)), 
                            ]))
 test_loader = torch.utils.data.DataLoader(test_images, batch_size=batch_size,
-                                          shuffle=True, num_workers=0)
+                                          shuffle=True, num_workers=4)
 
 print('Number of test images: ', len(test_images))
 
