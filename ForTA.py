@@ -3,13 +3,20 @@ import torchvision
 from tanukiCharNet import ResNet, BasicBlock
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
+import argparse
+
+parser = argparse.ArgumentParser(description='Trainer')
+parser.add_argument('-i', type=str,default = "FtanukiCharNet.pth")
+
+args = parser.parse_args()
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 cpu = torch.device('cpu')
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
 
-model.load_state_dict(torch.load("FtanukiCharNet.pth"))
+model.load_state_dict(torch.load(args.i))
+#model = torch.load("FtanukiCharNet.pth")
 model.eval()
 batch_size = 16
 
