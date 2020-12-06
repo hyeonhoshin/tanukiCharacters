@@ -1,6 +1,6 @@
 import torch
 import torchvision
-from tanukiCharNet import Resnet, BasicBlock
+from tanukiCharNet import ResNet, BasicBlock
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 
