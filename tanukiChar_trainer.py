@@ -99,7 +99,7 @@ for epoch in range(epochs):  # loop over the dataset multiple times
     # Learning rate changes
     sch.step()
     
-    if epoch%100 == 100-1:
+    if epoch%10 == 10-1:
         torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
 
 print('Finished Training')

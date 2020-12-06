@@ -38,6 +38,7 @@ class Augument(torch.nn.Module):
             bbox[3] += pad
 
         iim = iim.crop(bbox)
+        deg = torch.empty(1).uniform_(-180.0,180.0).item()
         iim = iim.rotate(deg, expand=True)
 
         bbox = iim.getbbox()

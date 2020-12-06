@@ -10,7 +10,7 @@ parser.add_argument('-i', type=str,default = "FtanukiCharNet.pth")
 
 args = parser.parse_args()
 
-device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 cpu = torch.device('cpu')
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
