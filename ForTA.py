@@ -17,7 +17,7 @@ model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
 
 model.load_state_dict(torch.load(args.i))
 model.eval()
-batch_size = 16
+batch_size = 8
 
 test_dir = '../ForTA/abcde'
 
