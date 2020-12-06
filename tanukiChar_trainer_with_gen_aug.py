@@ -18,8 +18,8 @@ train_labels, train_images = [],[]
 train_dir = './aug_abcde'
 shape_list = ['a', 'b', 'c', 'd', 'e']
 
-batch_size = 16
-epochs = 25
+batch_size = 8
+epochs = 35
 
 # Data augumentation
 train_transform = transforms.Compose([

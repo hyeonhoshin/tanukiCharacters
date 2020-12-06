@@ -18,10 +18,10 @@ train_labels, train_images = [],[]
 train_dir = "./abcde" #'./aug_abcde' when using dset from gen_aug.py
 shape_list = ['a', 'b', 'c', 'd', 'e']
 
-batch_size = 16
-epochs = 25*100 #Augument rate
+batch_size = 8
+epochs = 35*100 #Augument rate
 
-# Data augumentation
+# 
 train_transform = transforms.Compose([
     Augument(pad=1),
     transforms.GaussianBlur((5,5), sigma=(0.1, 2.0)),

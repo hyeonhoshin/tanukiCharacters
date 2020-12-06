@@ -10,19 +10,16 @@ parser.add_argument('-i', type=str,default = "FtanukiCharNet.pth")
 
 args = parser.parse_args()
 
-
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 cpu = torch.device('cpu')
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
 
 model.load_state_dict(torch.load(args.i))
-#model = torch.load("FtanukiCharNet.pth")
 model.eval()
 batch_size = 16
 
 test_dir = '../ForTA/abcde'
-#test_dir = '../ForTA'
 
 test_images = dset.ImageFolder(root=test_dir,
                            transform=transforms.Compose([
