@@ -4,6 +4,7 @@ from tanukiCharNet import ResNet, BasicBlock
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 
+
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 cpu = torch.device('cpu')
 

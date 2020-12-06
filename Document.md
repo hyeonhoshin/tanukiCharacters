@@ -8,7 +8,7 @@ The simplest way is to execute **'ForTA.py'**. It loads the weights what I train
 ### For scoring
 Excecute **ForTA.py**. There is no need to use any arguments. It reads **"FtanukiCharNet.pth"** weight file on the same folder.
 #### Requisites
-* Pytorch
+* Pytorch (1.7.0), (in 1.3.1 it will makes error because save method is different.)
 * torchvision
 * tanukiCharNet.py, tanukiDataAug.py in same folder.
 
