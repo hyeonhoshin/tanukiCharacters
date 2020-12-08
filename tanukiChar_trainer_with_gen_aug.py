@@ -112,8 +112,8 @@ for epoch in range(epochs):
         optimizer.step()
 
         _, predicted = outputs.max(1)
-        total += labels.size(0)
-        correct += predicted.eq(labels).sum().item()
+        total += y.size(0)
+        correct += predicted.eq(y).sum().item().to(cpu)
 
         # print statistics
         running_loss += loss.item()
