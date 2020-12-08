@@ -1,6 +1,4 @@
-import cv2
 import numpy as np
-import os
 import torch
 import matplotlib.pyplot as plt
 import torchvision
@@ -8,7 +6,6 @@ from tanukiCharNet import BasicBlock, ResNet
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torch.nn as nn
-import math
 from tanukiDataAug import Augument
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -53,8 +50,7 @@ model.apply(init_weights)
 
 ## Training
 itr = 0
-for epoch in range(epochs):  # loop over the dataset multiple times
-    #print('------- Epoch:', epoch,'LR:', sch.get_lr(),'-------')
+for epoch in range(epochs):
     model.train()
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
