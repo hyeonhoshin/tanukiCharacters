@@ -46,8 +46,8 @@ sch = torch.optim.lr_scheduler.StepLR(optimizer=optimizer ,step_size=1, gamma=lr
 ## Initialize weights
 def init_weights(m):
     if type(m) == nn.Linear:
-        torch.nn.init.xavier_uniform_(m.weight)
-        m.bias.data.fill_(0.01)
+        torch.nn.init.xavier_normal_(m.weight)
+        m.bias.data.fill_(0)
         
 model.apply(init_weights)
 
