@@ -113,7 +113,7 @@ for epoch in range(epochs):
 
         _, predicted = outputs.max(1)
         total += labels.size(0)
-        correct += predicted.eq(targets).sum().item()
+        correct += predicted.eq(labels).sum().item()
 
         # print statistics
         running_loss += loss.item()
@@ -124,7 +124,7 @@ for epoch in range(epochs):
         # writing statistics
         writer.add_scalar('training_loss', running_loss / batch_size, itr+1)
 
-        print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
         
 
     # Get val Accuracy
