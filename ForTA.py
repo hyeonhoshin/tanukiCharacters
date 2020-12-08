@@ -19,6 +19,32 @@ model.load_state_dict(torch.load(args.i))
 model.eval()
 batch_size = 8
 
+#Get train Accuracy
+train_dir = './abcde'
+
+train_images = dset.ImageFolder(root=train_dir,
+                           transform=transforms.Compose([
+                               transforms.ToTensor(),
+                               transforms.Normalize((0.5,0.5,0.5),  
+                                                    (0.5,0.5,0.5)), 
+                           ]))
+train_loader = torch.utils.data.DataLoader(train_images, batch_size=batch_size,
+                                          shuffle=False, num_workers=8)
+
+print('Number of train images: ', len(train_images))
+
+correct = 0
+total = 0
+with torch.no_grad():
+    for data in train_loader:
+        images, labels = data
+        outputs = model(images.to(device))
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted.to(cpu) == labels).sum().item()
+print('Train Accuracy = {}\n'.format(100 * correct / total))
+
+# Get test Accuracy
 test_dir = '../ForTA/abcde'
 
 test_images = dset.ImageFolder(root=test_dir,
@@ -28,7 +54,7 @@ test_images = dset.ImageFolder(root=test_dir,
                                                     (0.5,0.5,0.5)), 
                            ]))
 test_loader = torch.utils.data.DataLoader(test_images, batch_size=batch_size,
-                                          shuffle=True, num_workers=4)
+                                          shuffle=False, num_workers=8)
 
 print('Number of test images: ', len(test_images))
 
