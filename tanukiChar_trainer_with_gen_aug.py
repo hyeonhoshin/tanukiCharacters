@@ -93,18 +93,18 @@ def print_train_acc():
 def print_val_acc():
     # Get val Accuracy
     model.eval()
-    correct = 0
-    total = 0
+    correct2 = 0
+    total2 = 0
     with torch.no_grad():
         for data in valloader:
             images, labels = data
-            outputs = model(images.to(device))
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted.to(cpu) == labels).sum().item()
+            outputs2 = model(images.to(device))
+            _, predicted2 = torch.max(outputs2.data, 1)
+            total2 += labels.size(0)
+            correct2 += (predicted2.to(cpu) == labels).sum().item()
 
-    print('Valdiation accuracy: {:.3f}%'.format(100 * correct / total))
-    writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
+    print('Valdiation accuracy: {:.3f}%'.format(100 * correct2 / total2))
+    writer.add_scalar('val_acc', 100 * correct2 / total2, epoch+ 1)
 
 for epoch in range(epochs):
     model.train()
@@ -141,8 +141,10 @@ for epoch in range(epochs):
     print_val_acc()
             
     # Learning rate changes
+    writer.flush()
     sch.step()
     
     torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
 
 print('Finished Training')
+writer.close()
