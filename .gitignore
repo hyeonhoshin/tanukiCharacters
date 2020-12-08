@@ -3,3 +3,7 @@ names.png
 20203344.zip
 .vscode/.ropeproject/config.py
 .vscode/.ropeproject/objectdb
+aug_abcde/
+models_from_augs/
+runs/
+tanukiChar_trainer.py.save
