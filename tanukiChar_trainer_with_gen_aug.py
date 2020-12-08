@@ -51,7 +51,6 @@ def init_weights(m):
         m.bias.data.fill_(0)
     elif type(m) == nn.Conv2d:
         torch.nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
-        m.bias.data.fill_(0)
         
 model.apply(init_weights)
 
