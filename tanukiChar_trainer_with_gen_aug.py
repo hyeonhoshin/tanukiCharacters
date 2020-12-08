@@ -72,43 +72,29 @@ model.apply(init_weights)
 ## Training
 itr = 0
 
-def print_train_acc():
+def print_val_acc():
     # Get train Accuracy
     model.eval()
     correct = 0
     total = 0
 
     with torch.no_grad():
-        for data in trainloader:
+        for data in valloader:
             images, labels = data
             outputs = model(images.to(device))
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.to(cpu) == labels).sum().item()
 
-    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
-    writer.add_scalar('train_acc', 100 * correct / total, epoch+ 1)
+    print('Val accuracy: {:.3f}%'.format(100 * correct / total))
+    writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
 
-
-def print_val_acc():
-    # Get val Accuracy
-    model.eval()
-    correct2 = 0
-    total2 = 0
-    with torch.no_grad():
-        for data in valloader:
-            images, labels = data
-            outputs2 = model(images.to(device))
-            _, predicted2 = torch.max(outputs2.data, 1)
-            total2 += labels.size(0)
-            correct2 += (predicted2.to(cpu) == labels).sum().item()
-
-    print('Valdiation accuracy: {:.3f}%'.format(100 * correct2 / total2))
-    writer.add_scalar('val_acc', 100 * correct2 / total2, epoch+ 1)
 
 for epoch in range(epochs):
     model.train()
     running_loss = 0.0
+    correct = 0
+    total = 0
     for i, data in enumerate(augloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
@@ -125,6 +111,10 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
 
+        _, predicted = outputs.max(1)
+        total += targets.size(0)
+        correct += predicted.eq(targets).sum().item()
+
         # print statistics
         running_loss += loss.item()
         if i%4==3:
@@ -133,9 +123,9 @@ for epoch in range(epochs):
         
         # writing statistics
         writer.add_scalar('training_loss', running_loss / batch_size, itr+1)
+
+        print('Train accuracy: {:.3f}%'.format(100 * correct / total))
         
-    # Get train Accuracy
-    print_train_acc()
 
     # Get val Accuracy
     print_val_acc()
