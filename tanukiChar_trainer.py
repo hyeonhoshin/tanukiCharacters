@@ -9,6 +9,7 @@ import torch.nn as nn
 from tanukiDataAug import Augument
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+cpu = torch.device('cpu')
 
 # create lists to save the labels (the name of the shape)
 train_labels, train_images = [],[]
@@ -67,8 +68,7 @@ for epoch in range(epochs):
 
     correct = 0
     total = 0
-    
-    for i, data in enumerate(trainloader, 0):
+    for i, data in enumerate(augloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
         
@@ -84,26 +84,19 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
 
+        _, predicted = outputs.max(1)
+        total += y.size(0)
+        correct += predicted.eq(y).sum().item()
         # print statistics
         running_loss += loss.item()
         if i%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
             running_loss = 0.0
         
+    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+        
     # Get train Accuracy
     model.eval()
-    correct = 0
-    total = 0
-    cpu = torch.device('cpu')
-    with torch.no_grad():
-        for data in trainloader:
-            images, labels = data
-            outputs = model(images.to(device))
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted.to(cpu) == labels).sum().item()
-    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
-
     correct = 0
     total = 0
     with torch.no_grad():

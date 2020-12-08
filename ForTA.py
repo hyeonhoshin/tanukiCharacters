@@ -38,8 +38,9 @@ total = 0
 with torch.no_grad():
     for data in train_loader:
         images, labels = data
-        outputs = model(images.to(device))
-        _, predicted = torch.max(outputs.data, 1)
+        images_g, labels_g = images.to(device), labels.to(device)
+        outputs = model(images_g)
+        _, predicted = outputs.max(1)
         total += labels.size(0)
         correct += (predicted.to(cpu) == labels).sum().item()
 print('Train Accuracy = {}\n'.format(100 * correct / total))
