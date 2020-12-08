@@ -8,6 +8,10 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 from tanukiDataAug import Augument
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
+
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 train_dir = './aug_abcde'
