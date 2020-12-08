@@ -8,6 +8,9 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 from tanukiDataAug import Augument
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 cpu = torch.device('cpu')
 
@@ -17,7 +20,7 @@ train_dir = "./abcde" #'./aug_abcde' when using dset from gen_aug.py
 shape_list = ['a', 'b', 'c', 'd', 'e']
 
 batch_size = 8
-epochs = 35*100 #Epochs * Augument rate
+epochs = 70*100 #Epochs * Augument rate. Same with 70epochs with gen_aug
 
 # Data augumentation
 train_transform = transforms.Compose([
@@ -94,26 +97,29 @@ for epoch in range(epochs):
         writer.add_scalar('training_loss', running_loss / batch_size, itr+1)
 
     print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+    writer.add_scalar('train_acc', 100 * correct / total, epoch+ 1)
         
-        
-    # Get train Accuracy
-    model.eval()
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for data in valloader:
-            images, labels = data
-            outputs = model(images.to(device))
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted.to(cpu) == labels).sum().item()
+    if epoch%10 == 1:
+        # Get train Accuracy
+        model.eval()
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for data in valloader:
+                images, labels = data
+                outputs = model(images.to(device))
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted.to(cpu) == labels).sum().item()
 
-    print('Test accuracy: {:.3f}%'.format(100 * correct / total))
+        print('Val accuracy: {:.3f}%'.format(100 * correct / total))
+        writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
             
     # Learning rate changes
     sch.step()
     
     if epoch%10 == 10-1:
-        torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
+        torch.save(model.state_dict(), "F_tanukiChar_epoch{}.pth".format(epoch+1))
 
 print('Finished Training')
+writer.close()
