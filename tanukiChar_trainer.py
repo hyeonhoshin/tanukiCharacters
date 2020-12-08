@@ -98,6 +98,7 @@ for epoch in range(epochs):
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.to(cpu) == labels).sum().item()
+    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
 
     correct = 0
     total = 0
@@ -109,7 +110,7 @@ for epoch in range(epochs):
             total += labels.size(0)
             correct += (predicted.to(cpu) == labels).sum().item()
 
-    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+    print('Test accuracy: {:.3f}%'.format(100 * correct / total))
             
     # Learning rate changes
     sch.step()
