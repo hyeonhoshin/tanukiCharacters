@@ -102,7 +102,7 @@ for epoch in range(epochs):
     print('Train accuracy: {:.3f}%'.format(100 * correct / total))
     writer.add_scalar('train_acc', 100 * correct / total, epoch+ 1)
         
-    if epoch%10 == 1:
+    if epoch%10 == 9:
         # Get train Accuracy
         model.eval()
         correct = 0
@@ -117,12 +117,10 @@ for epoch in range(epochs):
 
         print('Val accuracy: {:.3f}%'.format(100 * correct / total))
         writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
+        torch.save(model.state_dict(), "F_tanukiChar_epoch{}.pth".format(epoch+1))
             
     # Learning rate changes
     sch.step()
     
-    if epoch%10 == 10-1:
-        torch.save(model.state_dict(), "F_tanukiChar_epoch{}.pth".format(epoch+1))
-
 print('Finished Training')
 writer.close()
