@@ -32,6 +32,18 @@ trainset = dset.ImageFolder(root=train_dir,
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True, num_workers=0)
 
+# Data from val dset
+val_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5,0.5,0.5],
+                         std=[0.5,0.5,0.5])
+])
+                                    
+valset = dset.ImageFolder(root='../ForTA',
+                           transform=val_transform)
+valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
+                                          shuffle=False, num_workers=8)
+
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
 learning_rate = 2e-3
@@ -81,6 +93,16 @@ for epoch in range(epochs):
     cpu = torch.device('cpu')
     with torch.no_grad():
         for data in trainloader:
+            images, labels = data
+            outputs = model(images.to(device))
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted.to(cpu) == labels).sum().item()
+
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for data in valloader:
             images, labels = data
             outputs = model(images.to(device))
             _, predicted = torch.max(outputs.data, 1)

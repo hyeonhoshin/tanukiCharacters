@@ -48,7 +48,7 @@ val_transform = transforms.Compose([
                          std=[0.5,0.5,0.5])
 ])
                                     
-valset = dset.ImageFolder(root='./../ForTA',
+valset = dset.ImageFolder(root='../ForTA',
                            transform=val_transform)
 valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
                                           shuffle=False, num_workers=8)
