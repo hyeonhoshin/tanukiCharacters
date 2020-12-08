@@ -35,7 +35,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
 learning_rate = 2e-3
-lr_decay_rate = 0.95
+lr_decay_rate = 0.99948 # 0.99948^3500 = 0.95^35
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
