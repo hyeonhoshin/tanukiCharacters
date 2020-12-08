@@ -48,14 +48,14 @@ val_transform = transforms.Compose([
                          std=[0.5,0.5,0.5])
 ])
                                     
-valset = dset.ImageFolder(root='../ForTA',
+valset = dset.ImageFolder(root='../ForTA/abcde',
                            transform=val_transform)
 valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
                                           shuffle=False, num_workers=8)
 
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
-learning_rate = 1e-3
+learning_rate = 2e-3
 lr_decay_rate = 0.95
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
@@ -71,25 +71,6 @@ model.apply(init_weights)
 
 ## Training
 itr = 0
-
-def print_val_acc():
-    # Get train Accuracy
-    model.eval()
-    correct = 0
-    total = 0
-
-    with torch.no_grad():
-        for data in valloader:
-            images, labels = data
-            outputs = model(images.to(device))
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted.to(cpu) == labels).sum().item()
-
-    print('Val accuracy: {:.3f}%'.format(100 * correct / total))
-    writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
-
-
 for epoch in range(epochs):
     model.train()
     running_loss = 0.0
@@ -125,9 +106,21 @@ for epoch in range(epochs):
 
     print('Train accuracy: {:.3f}%'.format(100 * correct / total))
         
-
     # Get val Accuracy
-    print_val_acc()
+    model.eval()
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for data in valloader:
+            images, labels = data
+            outputs = model(images.to(device))
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted.to(cpu) == labels).sum().item()
+
+    print('Val accuracy: {:.3f}%'.format(100 * correct / total))
+    writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
             
     # Learning rate changes
     writer.flush()
