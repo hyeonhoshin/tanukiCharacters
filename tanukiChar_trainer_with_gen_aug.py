@@ -13,36 +13,45 @@ writer = SummaryWriter()
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-train_dir = './aug_abcde'
-
 batch_size = 8
 epochs = 35
 
-# Data augumentation
-train_transform = transforms.Compose([
+# Data from augumented dset
+aug_transform = transforms.Compose([
 
     transforms.GaussianBlur((5,5), sigma=(0.1, 2.0)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5,0.5,0.5],
                          std=[0.5,0.5,0.5])
 ])
+augset = dset.ImageFolder(root='./aug_abcde',
+                           transform=aug_transform)
+augloader = torch.utils.data.DataLoader(augset, batch_size=batch_size,
+                                          shuffle=True, num_workers=8)
 
+# Data from train dset
+train_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5,0.5,0.5],
+                         std=[0.5,0.5,0.5])
+])
+                                    
+trainset = dset.ImageFolder(root='./abcde',
+                           transform=train_transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                          shuffle=False, num_workers=8)
+
+# Data from val dset
 val_transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5,0.5,0.5],
                          std=[0.5,0.5,0.5])
 ])
-
-trainset = dset.ImageFolder(root=train_dir,
-                           transform=train_transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True, num_workers=8)
                                     
 valset = dset.ImageFolder(root='./../ForTA',
                            transform=val_transform)
 valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
-                                          shuffle=True, num_workers=8)
+                                          shuffle=False, num_workers=8)
 
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
@@ -65,7 +74,7 @@ itr = 0
 for epoch in range(epochs):
     model.train()
     running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
+    for i, data in enumerate(augloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
         
@@ -107,10 +116,8 @@ for epoch in range(epochs):
     writer.add_scalar('train_acc', 100 * correct / total, epoch+ 1)
 
     # Get val Accuracy
-    model.eval()
     correct = 0
     total = 0
-    cpu = torch.device('cpu')
     with torch.no_grad():
         for data in valloader:
             images, labels = data
