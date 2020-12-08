@@ -55,7 +55,7 @@ valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
 
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
-learning_rate = 2e-3
+learning_rate = 1e-3
 lr_decay_rate = 0.95
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
