@@ -10,10 +10,7 @@ from tanukiDataAug import Augument
 
 device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
-# create lists to save the labels (the name of the shape)
-train_labels, train_images = [],[]
 train_dir = './aug_abcde'
-shape_list = ['a', 'b', 'c', 'd', 'e']
 
 batch_size = 8
 epochs = 35
@@ -27,9 +24,20 @@ train_transform = transforms.Compose([
                          std=[0.5,0.5,0.5])
 ])
 
+val_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5,0.5,0.5],
+                         std=[0.5,0.5,0.5])
+])
+
 trainset = dset.ImageFolder(root=train_dir,
                            transform=train_transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                          shuffle=True, num_workers=8)
+                                    
+valset = dset.ImageFolder(root='./../ForTA',
+                           transform=val_transform)
+valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
                                           shuffle=True, num_workers=8)
 
 ### Model and Learning environment
@@ -71,10 +79,12 @@ for epoch in range(epochs):
 
         # print statistics
         running_loss += loss.item()
-        if itr%10==9:
+        if i%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
-        itr += 1
-        running_loss = 0.0
+            running_loss = 0.0
+        
+        # writing statistics
+        writer.add_scalar('training_loss', running_loss / batch_size, itr+1)
         
     # Get train Accuracy
     model.eval()
@@ -90,6 +100,23 @@ for epoch in range(epochs):
             correct += (predicted.to(cpu) == labels).sum().item()
 
     print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+    writer.add_scalar('train_acc', 100 * correct / total, epoch+ 1)
+
+    # Get val Accuracy
+    model.eval()
+    correct = 0
+    total = 0
+    cpu = torch.device('cpu')
+    with torch.no_grad():
+        for data in valloader:
+            images, labels = data
+            outputs = model(images.to(device))
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted.to(cpu) == labels).sum().item()
+
+    print('Valdiation accuracy: {:.3f}%'.format(100 * correct / total))
+    writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
             
     # Learning rate changes
     sch.step()
