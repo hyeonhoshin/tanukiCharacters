@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 from tanukiDataAug import Augument
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 # create lists to save the labels (the name of the shape)
 train_labels, train_images = [],[]
