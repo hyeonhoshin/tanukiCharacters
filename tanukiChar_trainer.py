@@ -64,6 +64,7 @@ def init_weights(m):
         
 model.apply(init_weights)
 
+itr = 0
 ## Training
 for epoch in range(epochs):
     model.train()
