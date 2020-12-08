@@ -19,9 +19,8 @@ train_dir = "./abcde" #'./aug_abcde' when using dset from gen_aug.py
 shape_list = ['a', 'b', 'c', 'd', 'e']
 
 batch_size = 8
-epochs = 35*100 #Augument rate
+epochs = 35*100 #Epochs * Augument rate
 
-# 
 train_transform = transforms.Compose([
     Augument(pad=1),
     transforms.GaussianBlur((5,5), sigma=(0.1, 2.0)),
@@ -37,7 +36,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
 
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
-learning_rate = 1e-3
+learning_rate = 2e-3
 lr_decay_rate = 0.95
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
@@ -53,7 +52,6 @@ def init_weights(m):
 model.apply(init_weights)
 
 ## Training
-itr = 0
 for epoch in range(epochs):  # loop over the dataset multiple times
     #print('------- Epoch:', epoch,'LR:', sch.get_lr(),'-------')
     model.train()
@@ -76,9 +74,8 @@ for epoch in range(epochs):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
-        if itr%4==3:
+        if i%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
-        itr += 1
         running_loss = 0.0
         
     # Get train Accuracy
