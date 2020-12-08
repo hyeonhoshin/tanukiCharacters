@@ -1,6 +1,4 @@
-import cv2
 import numpy as np
-import os
 import torch
 import matplotlib.pyplot as plt
 import torchvision
@@ -8,36 +6,56 @@ from tanukiCharNet import BasicBlock, ResNet
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torch.nn as nn
-import math
 from tanukiDataAug import Augument
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
+
+cpu = torch.device('cpu')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-# create lists to save the labels (the name of the shape)
-train_labels, train_images = [],[]
-train_dir = './aug_abcde'
-shape_list = ['a', 'b', 'c', 'd', 'e']
-
 batch_size = 8
 epochs = 35
 
-# Data augumentation
-train_transform = transforms.Compose([
+# Data from augumented dset
+aug_transform = transforms.Compose([
 
     transforms.GaussianBlur((5,5), sigma=(0.1, 2.0)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5,0.5,0.5],
                          std=[0.5,0.5,0.5])
 ])
+augset = dset.ImageFolder(root='./aug_abcde',
+                           transform=aug_transform)
+augloader = torch.utils.data.DataLoader(augset, batch_size=batch_size,
+                                          shuffle=True, num_workers=8)
 
-trainset = dset.ImageFolder(root=train_dir,
+# Data from train dset
+train_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5,0.5,0.5],
+                         std=[0.5,0.5,0.5])
+])
+                                    
+trainset = dset.ImageFolder(root='./abcde',
                            transform=train_transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True, num_workers=8)
+                                          shuffle=False, num_workers=8)
+
+# Data from val dset
+val_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5,0.5,0.5],
+                         std=[0.5,0.5,0.5])
+])
+                                    
+valset = dset.ImageFolder(root='../ForTA/abcde',
+                           transform=val_transform)
+valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
+                                          shuffle=False, num_workers=8)
 
 ### Model and Learning environment
 criterion = nn.CrossEntropyLoss()
-learning_rate = 1e-3
+learning_rate = 2e-3
 lr_decay_rate = 0.95
 
 model = ResNet(BasicBlock, [3, 4, 6, 3]).to(device)
@@ -46,19 +64,19 @@ sch = torch.optim.lr_scheduler.StepLR(optimizer=optimizer ,step_size=1, gamma=lr
 
 ## Initialize weights
 def init_weights(m):
-    if type(m) == nn.Linear:
-        torch.nn.init.xavier_uniform_(m.weight)
-        m.bias.data.fill_(0.01)
+    if type(m) == nn.Conv2d:
+        torch.nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
         
 model.apply(init_weights)
 
 ## Training
 itr = 0
-for epoch in range(epochs):  # loop over the dataset multiple times
-    #print('------- Epoch:', epoch,'LR:', sch.get_lr(),'-------')
+for epoch in range(epochs):
     model.train()
     running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
+    correct = 0
+    total = 0
+    for i, data in enumerate(augloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
         
@@ -74,31 +92,41 @@ for epoch in range(epochs):  # loop over the dataset multiple times
         loss.backward()
         optimizer.step()
 
+        _, predicted = outputs.max(1)
+        total += y.size(0)
+        correct += predicted.eq(y).sum().item()
         # print statistics
         running_loss += loss.item()
-        if itr%10==9:
+        if i%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
-        itr += 1
-        running_loss = 0.0
+            running_loss = 0.0
         
-    # Get train Accuracy
+        # writing statistics
+        writer.add_scalar('training_loss', running_loss / batch_size, itr+1)
+
+    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+        
+    # Get val Accuracy
     model.eval()
     correct = 0
     total = 0
-    cpu = torch.device('cpu')
+
     with torch.no_grad():
-        for data in trainloader:
+        for data in valloader:
             images, labels = data
             outputs = model(images.to(device))
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.to(cpu) == labels).sum().item()
 
-    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
+    print('Val accuracy: {:.3f}%'.format(100 * correct / total))
+    writer.add_scalar('val_acc', 100 * correct / total, epoch+ 1)
             
     # Learning rate changes
+    writer.flush()
     sch.step()
     
     torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
 
 print('Finished Training')
+writer.close()

@@ -157,3 +157,10 @@ first_submit/20203344/FtanukiCharNet.pth
 first_submit/20203344/tanukiChar_trainer.py
 first_submit/20203344/tanukiCharNet.py
 first_submit/20203344/tanukiDataAug.py
+20203344.zip
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/objectdb
+aug_abcde/
+models_from_augs/
+runs/
+tanukiChar_trainer.py.save
