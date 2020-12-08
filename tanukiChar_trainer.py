@@ -40,7 +40,7 @@ val_transform = transforms.Compose([
                          std=[0.5,0.5,0.5])
 ])
                                     
-valset = dset.ImageFolder(root='../ForTA',
+valset = dset.ImageFolder(root='../ForTA/abcde',
                            transform=val_transform)
 valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
                                           shuffle=False, num_workers=8)
@@ -65,9 +65,6 @@ model.apply(init_weights)
 for epoch in range(epochs):
     model.train()
     running_loss = 0.0
-
-    correct = 0
-    total = 0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
@@ -84,16 +81,12 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
 
-        _, predicted = outputs.max(1)
-        total += y.size(0)
-        correct += predicted.eq(y).sum().item()
         # print statistics
         running_loss += loss.item()
         if i%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
             running_loss = 0.0
         
-    print('Train accuracy: {:.3f}%'.format(100 * correct / total))
         
     # Get train Accuracy
     model.eval()
@@ -112,7 +105,7 @@ for epoch in range(epochs):
     # Learning rate changes
     sch.step()
     
-    if epoch%10 == 10-1:
+    if epoch%3 == 3-1:
         torch.save(model.state_dict(), "F_tanukiChar_epoch{}_GBlur+SSDAug+LRdecay0.95.pth".format(epoch+1))
 
 print('Finished Training')
