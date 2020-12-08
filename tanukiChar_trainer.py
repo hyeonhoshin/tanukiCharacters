@@ -72,7 +72,7 @@ for epoch in range(epochs):
         running_loss += loss.item()
         if i%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
-        running_loss = 0.0
+            running_loss = 0.0
         
     # Get train Accuracy
     model.eval()
