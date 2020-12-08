@@ -45,10 +45,7 @@ sch = torch.optim.lr_scheduler.StepLR(optimizer=optimizer ,step_size=1, gamma=lr
 
 ## Initialize weights
 def init_weights(m):
-    if type(m) == nn.Linear:
-        torch.nn.init.xavier_normal_(m.weight)
-        m.bias.data.fill_(0)
-    elif type(m) == nn.Conv2d:
+    if type(m) == nn.Conv2d:
         torch.nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
         
 model.apply(init_weights)
