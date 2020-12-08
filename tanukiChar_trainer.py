@@ -76,7 +76,7 @@ for epoch in range(epochs):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
-        if itr%10==9:
+        if itr%4==3:
             print('[%d, %5d] loss: %.6f' %(epoch + 1, i + 1, running_loss / batch_size))
         itr += 1
         running_loss = 0.0
