@@ -113,8 +113,7 @@ for epoch in range(epochs):
 
         _, predicted = outputs.max(1)
         total += y.size(0)
-        correct += predicted.eq(y).sum().item().to(cpu)
-
+        correct += predicted.eq(y).sum().item()
         # print statistics
         running_loss += loss.item()
         if i%4==3:
