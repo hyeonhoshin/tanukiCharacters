@@ -68,6 +68,8 @@ model.apply(init_weights)
 for epoch in range(epochs):
     model.train()
     running_loss = 0.0
+    total = 0
+    correct = 0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
